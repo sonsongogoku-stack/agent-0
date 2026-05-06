@@ -46,7 +46,7 @@ jobs:
       - name: Compute tags
         id: meta
         run: |
-          IMAGE="${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/agent-x"
+          IMAGE="${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/agent-0"
           SHA_TAG="${GITHUB_SHA:0:7}"
           echo "tags=$IMAGE:latest,$IMAGE:$SHA_TAG" >> $GITHUB_OUTPUT
 
