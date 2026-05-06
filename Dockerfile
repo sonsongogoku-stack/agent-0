@@ -9,12 +9,12 @@ COPY *.jsx ./
 COPY *.css ./
 COPY assets/ ./assets/
 
-# Install + rebuild native modules in one step
+# Install + build native modules from source (musl libc compat)
 RUN cd server && \
+    apk add --no-cache python3 make g++ && \
     npm ci --omit=dev && \
     npm prune --omit=dev && \
-    apk add --no-cache python3 make g++ && \
-    npm rebuild better-sqlite3 && \
+    npm rebuild better-sqlite3 --build-from-source && \
     apk del python3 make g++
 
 ENV NODE_ENV=production
