@@ -1,0 +1,17 @@
+{
+  "name": "agent-0-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AGENT-0 backend API server",
+  "main": "index.js",
+  "dependencies": {
+    "@alicloud/dypnsapi20170525": "^2.0.0",
+    "@alicloud/openapi-client": "^0.4.15",
+    "better-sqlite3": "^11.9.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^11.1.0"
+  }
+}

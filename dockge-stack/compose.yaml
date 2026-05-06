@@ -1,0 +1,62 @@
+# Dockge stack: agent-x
+#
+# 容器：
+#   app         — Agent X (Express)
+#   watchtower  — 监控 ACR，自动更新 app
+#
+# 依赖：ai-canvas 栈必须先部署在同一网络上
+#
+# 环境变量（.env 同级目录下）：
+#   无必需变量，若要覆盖 Canvas URL 可设 CANVAS_URL
+#   OPENROUTER_API_KEY 在 ai-canvas 栈中配置，这里不需要
+#
+# 首次部署：
+#   1) 服务器上 docker login crpi-xxxxx.cn-hongkong.personal.cr.aliyuncs.com
+#   2) Dockge 粘贴此文件
+#   3) 修改 image 地址（YOUR_NAMESPACE）
+#   4) Deploy
+
+services:
+  # ───────────────────────── Agent X ─────────────────────────
+  app:
+    image: crpi-0lox98hun8t7ek3x.cn-hongkong.personal.cr.aliyuncs.com/agent-0/agent-0:latest
+    container_name: agent-x
+    restart: unless-stopped
+
+    ports:
+      - "3008:3001"
+
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      # AI Canvas 的内部地址（Docker 网络直连）
+      - CANVAS_URL=http://ai-canvas:3000
+
+    # 如需自定义环境变量，在 .env 文件中定义，此处引用：
+    # env_file:
+    #   - .env
+
+    volumes:
+      # SQLite 数据持久化（数据库文件、WAL 等）
+      - agent-x-data:/app/server
+
+    # Watchtower 监控这个容器
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    networks:
+      - npm_network
+
+networks:
+  npm_network:
+    external: true
+    name: nginx-proxy-manager_default
+
+volumes:
+  agent-x-data:

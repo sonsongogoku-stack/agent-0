@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>AGENT-0 · ACG / SYSTEM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="/config.js"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="glyphs.jsx"></script>
+<script type="text/babel" src="api.jsx"></script>
+<script type="text/babel" src="screens-1.jsx"></script>
+<script type="text/babel" src="screens-2.jsx"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #121318; color: #E3E1E9; font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif; min-height: 100vh; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0D0E13; }
+  ::-webkit-scrollbar-thumb { background: #34343A; }
+  ::-webkit-scrollbar-thumb:hover { background: #FF5A1F; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 1px solid #FF5A1F; outline-offset: 1px;
+  }
+  textarea { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+  .screen { animation: fadeIn 0.25s ease-out; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+// ── 顶部 Header ─────────────────────────────────────────
+const TopBar = ({ balance, onTopUp, onNav, screen, phone, loggedIn, onLoginClick }) => (
+  <header data-screen-label="00 TopBar" style={{
+    height: 60, background: "#0D0E13", borderBottom: "1px solid #292A2F",
+    display: "flex", alignItems: "center", padding: "0 32px",
+    justifyContent: "space-between", flexShrink: 0,
+  }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+      <span onClick={() => onNav("home")} style={{
+        fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700,
+        fontSize: 22, letterSpacing: "-1px", color: "#FF5A1F", cursor: "pointer",
+      }}>ACG / SYSTEM</span>
+      <div style={{ width: 1, height: 20, background: "#34343A" }} />
+      <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 13, color: "#E4BEB3" }}>
+        AGENT-0 <span style={{ fontFamily: "'Noto Sans SC', sans-serif", opacity: 0.5, marginLeft: 4 }}>智能体平台</span>
+      </span>
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+      <HudClock />
+      <div style={{ width: 1, height: 24, background: "#34343A" }} />
+      {/* 余额 */}
+      <button onClick={onTopUp} style={{
+        background: "#1B1B20", border: "1px solid #34343A", padding: "8px 14px",
+        cursor: "pointer", display: "flex", alignItems: "center", gap: 12,
+      }}>
+        <div>
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "1.2px", color: "#FF5A1F" }}>BALANCE 余额</div>
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, color: "#E3E1E9" }}>¥{balance.toFixed(2)}</div>
+        </div>
+        <div style={{ width: 60 }}><EnergyBar value={balance} max={500} height={3} showSegments={false} /></div>
+        <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "1px", color: "#FF5A1F" }}>+ TOP UP</span>
+      </button>
+      {/* User / Guest */}
+      {loggedIn ? (
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 32, height: 32, border: "1px solid #34343A",
+            backgroundImage: "url('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80&auto=format&fit=crop')",
+            backgroundSize: "cover", backgroundPosition: "center",
+          }} />
+          <div>
+            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.8px", color: "#E3E1E9" }}>OP-{phone ? phone.slice(-4) : "774-X"}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: "#FF5A1F" }}>● AUTHENTICATED</div>
+          </div>
+        </div>
+      ) : (
+        <button onClick={onLoginClick} style={{
+          background: "transparent", border: "1px solid #FF5A1F", padding: "8px 16px",
+          cursor: "pointer",
+          fontFamily: "'Space Grotesk', sans-serif", fontSize: 10, fontWeight: 700,
+          letterSpacing: "1.2px", color: "#FF5A1F", textTransform: "uppercase",
+        }}>SIGN IN 登录</button>
+      )}
+    </div>
+  </header>
+);
+
+// ── 左侧导航 ─────────────────────────────────────────────
+const Nav = ({ screen, onNav }) => {
+  const items = [
+    { id: "home",     en: "Agents",        zh: "智能体",   num: "01" },
+    { id: "wallet",   en: "Wallet",        zh: "钱包",     num: "02" },
+    { id: "subs",     en: "Subscriptions", zh: "订阅",     num: "03" },
+    { id: "history",  en: "History",       zh: "历史",     num: "04" },
+    { id: "settings", en: "Settings",      zh: "设置",     num: "05" },
+  ];
+  return (
+    <aside style={{
+      width: 220, flexShrink: 0, background: "#0D0E13",
+      borderRight: "1px solid #292A2F", paddingTop: 24,
+      display: "flex", flexDirection: "column",
+    }}>
+      <div style={{ padding: "0 20px 12px", marginBottom: 8 }}>
+        <SectionLabel en="NAVIGATION" zh="导航" />
+      </div>
+      {items.map(item => {
+        const active = screen === item.id || (item.id === "home" && (screen === "detail" || screen === "run"));
+        return (
+          <button key={item.id} onClick={() => onNav(item.id)} style={{
+            width: "100%", textAlign: "left",
+            background: active ? "#1B1B20" : "transparent",
+            border: "none",
+            borderLeft: active ? "2px solid #FF5A1F" : "2px solid transparent",
+            padding: "12px 18px", cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 12,
+          }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: active ? "#FF5A1F" : "#E4BEB3", opacity: active ? 1 : 0.5 }}>{item.num}</span>
+            <div>
+              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 14, fontWeight: active ? 700 : 500, color: active ? "#E3E1E9" : "#E4BEB3" }}>{item.en}</div>
+              <div style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: 11, color: "#E4BEB3", opacity: active ? 0.7 : 0.4 }}>{item.zh}</div>
+            </div>
+          </button>
+        );
+      })}
+      <div style={{ marginTop: "auto", padding: 18, borderTop: "1px solid #292A2F" }}>
+        <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "1.2px", color: "#E4BEB3" }}>SYSTEM STATUS</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#E3E1E9", marginTop: 4 }}>● ALL NOMINAL</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: "#E4BEB3", opacity: 0.5, marginTop: 2 }}>v.1.0.4 · 32/32 agents</div>
+      </div>
+    </aside>
+  );
+};
+
+// ── App ─────────────────────────────────────────────────
+const App = () => {
+  const [screen, setScreen] = useState("home");
+  const [agentId, setAgentId] = useState(null);
+  const [runInput, setRunInput] = useState("");
+  const [runTo, setRunTo] = useState("zh");
+  const [balance, setBalance] = useState(0);
+  const [subs, setSubs] = useState([]);
+  const [topUpOpen, setTopUpOpen] = useState(false);
+  const [subOpen, setSubOpen] = useState(false);
+  const [subAgentId, setSubAgentId] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [agents, setAgents] = useState([]);
+  const [tweakShowSubs, setTweakShowSubs] = useState(true);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+  const [trialUsed, setTrialUsed] = useState(!!localStorage.getItem('trial_used'));
+
+  // Check token on mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      api.get('/wallet').then(data => {
+        setBalance(data.balance);
+        setPhone(data.user.phone);
+        setLoggedIn(true);
+        setLoading(false);
+      }).catch(() => {
+        localStorage.removeItem('token');
+        setLoading(false);
+      });
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  // Refresh balance from API
+  const refreshBalance = async () => {
+    try {
+      const data = await api.get('/wallet');
+      setBalance(data.balance);
+    } catch (e) { console.error('refreshBalance error', e); }
+  };
+
+  const refreshSubscriptions = async () => {
+    try {
+      const data = await api.get('/subscriptions');
+      // Normalize subscription format
+      const mapped = data.map(s => ({
+        agentId: s.agent_id,
+        since: s.since,
+        renewsOn: s.renews_on,
+        monthly: s.monthly,
+        used: s.used,
+        included: s.included,
+        autoRenew: !!s.auto_renew,
+        agent: s.agent_code ? { code: s.agent_code, nameEn: s.agent_name_en, nameZh: s.agent_name_zh, category: s.agent_category } : null
+      }));
+      setSubs(mapped);
+    } catch (e) { console.error('refreshSubscriptions error', e); }
+  };
+
+  // Login via API
+  const handleLogin = async (phoneNum) => {
+    setPhone(phoneNum);
+    refreshSubscriptions();
+    const wallet = await api.get('/wallet').catch(() => ({ balance: 0 }));
+    setBalance(wallet.balance);
+    setLoggedIn(true);
+    setLoginOpen(false);
+    // Execute pending action
+    if (pendingAction) {
+      const action = pendingAction;
+      setPendingAction(null);
+      setTimeout(() => {
+        if (action.type === 'run') handleRun(action.args.input, action.args.to);
+      }, 100);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setLoggedIn(false);
+    setPhone("");
+    setBalance(0);
+    setSubs([]);
+  };
+
+  // Require auth or trial
+  const requireAuth = (actionType, actionArgs) => {
+    if (loggedIn) {
+      if (actionType === 'run') handleRun(actionArgs.input, actionArgs.to);
+      return true;
+    }
+    // Trial: first run without login
+    if (actionType === 'run' && !trialUsed) {
+      setTrialUsed(true);
+      localStorage.setItem('trial_used', '1');
+      handleRun(actionArgs.input, actionArgs.to);
+      return true;
+    }
+    setPendingAction({ type: actionType, args: actionArgs });
+    setLoginOpen(true);
+    return false;
+  };
+
+  // Existing handlers
+  const handleNav = (s) => {
+    setScreen(s);
+    if (s !== "detail" && s !== "run") setAgentId(null);
+  };
+
+  const handleOpenAgent = (id) => {
+    setAgentId(id);
+    setScreen("detail");
+  };
+
+  const handleRun = (input, to) => {
+    setRunInput(input);
+    setRunTo(to || "zh");
+    setScreen("run");
+  };
+
+  const handleRunComplete = () => {
+    refreshBalance();
+    refreshSubscriptions();
+    setScreen("detail");
+  };
+
+  const handleSubscribe = (id) => {
+    if (!loggedIn) { setLoginOpen(true); return; }
+    setSubAgentId(id);
+    setSubOpen(true);
+  };
+
+  const handleSubConfirm = async (id, monthly) => {
+    await refreshSubscriptions();
+    await refreshBalance();
+    setSubOpen(false);
+    setScreen("detail");
+  };
+
+  // Show loading
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#0D0E13", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16 }}>
+        <div style={{ width: 32, height: 32, border: "2px solid #FF5A1F", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.9s linear infinite" }} />
+        <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "1.2px", color: "#FF5A1F" }}>INITIALIZING 初始化...</div>
+      </div>
+    );
+  }
+
+  let main;
+  if (screen === "home") main = <HomeScreen onOpen={handleOpenAgent} subscriptions={tweakShowSubs ? subs : []} />;
+  else if (screen === "detail" && agentId) main = <AgentDetailScreen agentId={agentId} onRun={(input, to) => requireAuth('run', { input, to })} onSubscribe={handleSubscribe} subscriptions={subs} balance={balance} onTopUp={() => setTopUpOpen(true)} />;
+  else if (screen === "run" && agentId) main = <RunScreen agentId={agentId} prompt={runInput} translateTo={runTo} balance={balance} onComplete={handleRunComplete} onCancel={() => setScreen("detail")} />;
+  else if (screen === "wallet") main = <WalletScreen balance={balance} onTopUp={() => setTopUpOpen(true)} />;
+  else if (screen === "subs") main = <SubscriptionsScreen subscriptions={tweakShowSubs ? subs : []} onOpen={handleOpenAgent} />;
+  else if (screen === "history") main = <WalletScreen balance={balance} onTopUp={() => setTopUpOpen(true)} />;
+  else main = (
+    <div style={{ background: "#1B1B20", border: "1px solid #292A2F", padding: 64, textAlign: "center" }}>
+      <SectionLabel en="MODULE NOT LOADED" zh="模块未加载" style={{ justifyContent: "center" }} />
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: "#E4BEB3", marginTop: 12 }}>该模块将在下一次迭代中接入。</div>
+    </div>
+  );
+
+  const labels = { home: "Agents 智能体", detail: agentId ? `${agentId} 详情` : "Detail", run: "Execution 运行", wallet: "Wallet 钱包", subs: "Subscriptions 订阅", history: "History 历史", settings: "Settings 设置" };
+
+  return (
+    <div data-screen-label="Main App" style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <TopBar balance={balance} onTopUp={() => setTopUpOpen(true)} onNav={handleNav} screen={screen} phone={phone} loggedIn={loggedIn} onLoginClick={() => setLoginOpen(true)} />
+      <div style={{ display: "flex", flex: 1 }}>
+        <Nav screen={screen} onNav={handleNav} />
+        <main style={{ flex: 1, padding: "24px 32px 64px", overflow: "auto" }}>
+          <div style={{ marginBottom: 20, display: "flex", alignItems: "center", gap: 10, fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "1.2px", color: "#E4BEB3", textTransform: "uppercase" }}>
+            <button onClick={() => handleNav("home")} style={{ background: "none", border: "none", color: "#E4BEB3", opacity: 0.6, cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", letterSpacing: "inherit", fontWeight: "inherit", textTransform: "inherit" }}>HOME</button>
+            <span style={{ opacity: 0.4 }}>/</span>
+            <span style={{ color: "#FF5A1F" }}>{labels[screen] || screen.toUpperCase()}</span>
+          </div>
+          <div className="screen" key={screen + agentId}>{main}</div>
+        </main>
+      </div>
+
+      <TopUpModal open={topUpOpen} onClose={() => setTopUpOpen(false)} onConfirm={async (amt) => { await refreshBalance(); setTopUpOpen(false); }} />
+      <SubscribeModal open={subOpen} agentId={subAgentId} onClose={() => setSubOpen(false)} onConfirm={handleSubConfirm} />
+
+      {/* Login modal */}
+      <Modal open={loginOpen} onClose={() => setLoginOpen(false)} title="AUTHENTICATION" titleZh="身份认证" width={520}>
+        <LoginScreen onLogin={handleLogin} embedded />
+      </Modal>
+
+      {/* Tweaks panel */}
+      {window.TweaksPanel && (
+        <window.TweaksPanel title="TWEAKS · 调试面板">
+          <window.TweakSection title="SESSION 会话">
+            <window.TweakToggle label="已登录 / Logged in" value={loggedIn} onChange={v => {
+              if (v) {
+                api.post('/auth/dev-login', { phone: '13800001234' }).then(d => {
+                  localStorage.setItem('token', d.token);
+                  setBalance(d.user.balance);
+                  setPhone(d.user.phone);
+                  setLoggedIn(true);
+                });
+              } else {
+                handleLogout();
+              }
+            }} />
+            <window.TweakToggle label="显示订阅 / Show subscriptions" value={tweakShowSubs} onChange={v => setTweakShowSubs(v)} />
+          </window.TweakSection>
+          <window.TweakSection title="WALLET 钱包">
+            <window.TweakSlider label="余额 (¥)" value={balance} onChange={v => {
+              api.post('/dev/reset-balance', { amount: v }).then(d => setBalance(d.balance));
+            }} min={0} max={500} step={0.5} />
+            <window.TweakButton label="设为 ¥0 (余额不足)" onClick={() => {
+              api.post('/dev/reset-balance', { amount: 0 }).then(d => setBalance(d.balance));
+            }} />
+            <window.TweakButton label="设为 ¥184.20" onClick={() => {
+              api.post('/dev/reset-balance', { amount: 184.20 }).then(d => setBalance(d.balance));
+            }} />
+          </window.TweakSection>
+          <window.TweakSection title="QUICK NAV 快速跳转">
+            <window.TweakButton label="→ 智能体首页" onClick={() => handleNav("home")} />
+            <window.TweakButton label="→ 乔布斯问答详情" onClick={() => handleOpenAgent("jobs-qa")} />
+            <window.TweakButton label="→ 文生图详情" onClick={() => handleOpenAgent("txt2img")} />
+            <window.TweakButton label="→ 钱包" onClick={() => handleNav("wallet")} />
+            <window.TweakButton label="→ 我的订阅" onClick={() => handleNav("subs")} />
+            <window.TweakButton label="↑ 打开充值" onClick={() => setTopUpOpen(true)} />
+          </window.TweakSection>
+        </window.TweaksPanel>
+      )}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "dev": "node server/index.js"
+  },
+  "devDependencies": {
+    "@babel/standalone": "^7.29.3"
+  }
+}

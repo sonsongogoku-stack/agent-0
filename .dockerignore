@@ -1,0 +1,9 @@
+node_modules
+.git
+.github
+dockge-stack
+.claude
+*.md
+.env
+.env.local
+.DS_Store

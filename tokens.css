@@ -1,0 +1,289 @@
+/* ============================================================
+   ACG / SYSTEM — Technical Performance Interface
+   Design Tokens: Colors & Typography
+   Version: V.1.0.4
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+/* ── BASE COLOR TOKENS ─────────────────────────────────────── */
+:root {
+  /* Primary / Functional */
+  --color-primary:            #FF5A1F;
+  --color-bg:                 #121318;
+
+  /* Surface Scale */
+  --color-surface-lowest:     #0D0E13;
+  --color-surface-low:        #1B1B20;
+  --color-surface:            #1F1F24;
+  --color-surface-high:       #292A2F;
+
+  /* Borders */
+  --color-border:             #34343A;
+  --color-border-subtle:      #292A2F;
+
+  /* Text */
+  --color-text-primary:       #E3E1E9;
+  --color-text-secondary:     #E4BEB3;
+  --color-text-disabled:      rgba(228, 190, 179, 0.5);
+
+  /* Semantic */
+  --color-error:              #FFB4AB;
+  --color-error-container:    #DE0541;
+
+  /* ── SEMANTIC ALIASES ──────────────────────────────────── */
+  --bg:                       var(--color-bg);
+  --surface:                  var(--color-surface-low);
+  --surface-raised:           var(--color-surface);
+  --border:                   var(--color-border);
+  --fg1:                      var(--color-text-primary);
+  --fg2:                      var(--color-text-secondary);
+  --accent:                   var(--color-primary);
+
+  /* ── TYPOGRAPHY TOKENS ─────────────────────────────────── */
+  --font-display:             'Space Grotesk', 'Noto Sans SC', sans-serif;
+  --font-body:                'Inter', 'Noto Sans SC', sans-serif;
+  --font-label:               'Space Grotesk', 'Noto Sans SC', sans-serif;
+  --font-chinese:             'Noto Sans SC', 'PingFang SC', sans-serif;
+  --font-mono:                'Inter', monospace;
+
+  /* Type Scale */
+  --text-h1:                  64px;
+  --text-h2:                  48px;
+  --text-h3:                  36px;
+  --text-h4:                  28px;
+  --text-h5:                  22px;
+  --text-h6:                  18px;
+  --text-body:                16px;
+  --text-label:               14px;
+  --text-caption:             12px;
+
+  /* Line Heights */
+  --lh-tight:                 1.2;
+  --lh-heading:               1.3;
+  --lh-body:                  1.5;
+
+  /* Letter Spacing */
+  --ls-label:                 0.1em;    /* 1.2px @ 12px — uppercase labels */
+  --ls-display:              -0.05em;   /* -1.8px @ 36px — logo/display */
+
+  /* ── SPACING (4px base grid) ───────────────────────────── */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-12:  48px;
+  --space-24:  96px;
+
+  /* ── BORDER & RADIUS ───────────────────────────────────── */
+  --radius:    0px;           /* ALL corners are sharp — no rounding */
+  --border-width: 1px;
+
+  /* ── SHADOWS ───────────────────────────────────────────── */
+  --shadow-none: none;        /* No box-shadow used in this system */
+}
+
+/* ── SEMANTIC ELEMENT STYLES ───────────────────────────────── */
+
+h1, .h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: -1.8px;
+  color: var(--fg1);
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: 700;
+  line-height: var(--lh-heading);
+  color: var(--fg1);
+}
+
+h3, .h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: var(--lh-heading);
+  color: var(--fg1);
+}
+
+h4, .h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+  font-weight: 700;
+  line-height: var(--lh-heading);
+  color: var(--fg1);
+}
+
+h5, .h5 {
+  font-family: var(--font-display);
+  font-size: var(--text-h5);
+  font-weight: 500;
+  line-height: var(--lh-heading);
+  color: var(--fg1);
+}
+
+h6, .h6 {
+  font-family: var(--font-display);
+  font-size: var(--text-h6);
+  font-weight: 500;
+  line-height: var(--lh-heading);
+  color: var(--fg1);
+}
+
+p, .body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  color: var(--fg1);
+}
+
+.label {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--fg2);
+}
+
+.label-sm, .caption {
+  font-family: var(--font-label);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  line-height: 1.33;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--fg2);
+}
+
+.section-label {
+  font-family: var(--font-label);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  line-height: 1.33;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.mono, code {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  line-height: 1.25;
+  color: var(--fg2);
+}
+
+/* Chinese text — always secondary weight */
+.zh {
+  font-family: var(--font-chinese);
+  opacity: 0.5;
+}
+.zh-body {
+  font-family: var(--font-chinese);
+  opacity: 0.8;
+}
+
+/* ── COMPONENT PRIMITIVES ──────────────────────────────────── */
+
+/* Button: Primary */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--accent);
+  color: #000000;
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* Button: Secondary */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--fg1);
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* Button: Ghost */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--fg1);
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* Button: Disabled */
+.btn-disabled {
+  opacity: 0.5;
+  background: var(--color-surface-high);
+  color: var(--fg2);
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: not-allowed;
+}
+
+/* Input */
+.input {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--fg1);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  padding: 12px;
+  width: 100%;
+  outline: none;
+}
+.input-error {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+/* Card */
+.card {
+  background: var(--color-surface-low);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius);
+  padding: var(--space-8);
+}
+.card-alert {
+  background: #1A1A1C;
+  border: var(--border-width) solid var(--accent);
+}

@@ -1,0 +1,86 @@
+# .github/workflows/deploy.yml
+#
+# 构建 Agent X 镜像推到 ACR，触发 Watchtower 自动部署。
+#
+# GitHub Secrets 必需：
+#   ACR_REGISTRY        e.g. crpi-xxxxx.cn-hongkong.personal.cr.aliyuncs.com
+#   ACR_NAMESPACE       你的命名空间
+#   ACR_USERNAME        ACR 的用户名
+#   ACR_PASSWORD        ACR 的固定密码
+#
+# GitHub Secrets 可选：
+#   SSH_HOST            服务器 IP（配了会 SSH 过去触发 Watchtower 立即更新）
+#   SSH_USER            SSH 用户名
+#   SSH_PRIVATE_KEY     SSH 私钥
+
+name: Build & Push Agent X
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: build-agent-x-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Aliyun ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Compute tags
+        id: meta
+        run: |
+          IMAGE="${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/agent-x"
+          SHA_TAG="${GITHUB_SHA:0:7}"
+          echo "tags=$IMAGE:latest,$IMAGE:$SHA_TAG" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Check SSH available
+        id: ssh-check
+        run: |
+          if [ -n "$SSH_HOST" ]; then echo "enabled=true" >> "$GITHUB_OUTPUT"; fi
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+
+      - name: Trigger Watchtower (via SSH)
+        if: steps.ssh-check.outputs.enabled == 'true'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "→ Triggering Watchtower for agent-x..."
+            docker exec agent-x-watchtower kill -SIGHUP 1 2>/dev/null \
+              || echo "Watchtower not running, will pick up on next poll."
+
+      - name: Summary
+        run: |
+          echo "### ✅ Agent X image pushed to ACR" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tags: \`${{ steps.meta.outputs.tags }}\`" >> $GITHUB_STEP_SUMMARY
