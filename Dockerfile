@@ -1,21 +1,21 @@
-FROM node:22-alpine AS runner
+FROM node:22-slim
 
 WORKDIR /app
 
-# Copy all source files first
+# Copy all source files
 COPY server/ ./server/
 COPY *.html ./
 COPY *.jsx ./
 COPY *.css ./
 COPY assets/ ./assets/
 
-# Install + build native modules from source (musl libc compat)
+# Install build tools + production deps
 RUN cd server && \
-    apk add --no-cache python3 make g++ && \
+    apt-get update -qq && \
+    apt-get install -y -qq python3 make g++ && \
     npm ci --omit=dev && \
     npm prune --omit=dev && \
-    npm rebuild better-sqlite3 --build-from-source && \
-    apk del python3 make g++
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 ENV PORT=3001
