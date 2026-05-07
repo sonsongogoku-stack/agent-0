@@ -326,7 +326,6 @@ const HomeScreen = ({ onOpen, subscriptions }) => {
               <span style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: 18, opacity: 0.6, fontWeight: 400, marginLeft: 12 }}>浏览所有智能体</span>
             </h3>
           </div>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#E4BEB3" }}>
           <span style={{display:"none"}}></span>
         </div>
 
