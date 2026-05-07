@@ -15,9 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from project root
-const fs = require('fs');
-const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'Agent X.html'), 'utf-8');
-app.get("/", (req, res) => res.type('html').send(indexHtml));
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "..", "index.html")));
 app.use(express.static(path.join(__dirname, '..')));
 
 // Mount API routes
