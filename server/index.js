@@ -14,8 +14,7 @@ const CANVAS_URL = process.env.CANVAS_URL || '';  // set = external canvas (Dock
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from project root
-app.get("/", (req, res) => res.sendFile(path.join(__dirname, "..", "index.html")));
+// Serve static files from project root (index.html served for /)
 app.use(express.static(path.join(__dirname, '..')));
 
 // Mount API routes
