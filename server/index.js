@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from project root
-app.get("/", (req, res) => res.redirect("/Agent%20X.html"));
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "..", "Agent X.html")));
 app.use(express.static(path.join(__dirname, '..')));
 
 // Mount API routes
