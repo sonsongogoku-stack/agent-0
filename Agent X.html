@@ -41,7 +41,7 @@
 const { useState, useEffect } = React;
 
 // ── 顶部 Header ─────────────────────────────────────────
-const TopBar = ({ balance, onTopUp, onNav, screen, phone, loggedIn, onLoginClick }) => (
+const TopBar = ({ balance, onTopUp, onNav, screen, phone, loggedIn, onLoginClick, onLogout }) => (
   <header data-screen-label="00 TopBar" style={{
     height: 60, background: "#0D0E13", borderBottom: "1px solid #292A2F",
     display: "flex", alignItems: "center", padding: "0 32px",
@@ -83,6 +83,12 @@ const TopBar = ({ balance, onTopUp, onNav, screen, phone, loggedIn, onLoginClick
             <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.8px", color: "#E3E1E9" }}>OP-{phone ? phone.slice(-4) : "774-X"}</div>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: "#FF5A1F" }}>● AUTHENTICATED</div>
           </div>
+          <button onClick={onLogout} style={{
+            background: "transparent", border: "1px solid #34343A", padding: "4px 10px",
+            cursor: "pointer", marginLeft: 4,
+            fontFamily: "'Space Grotesk', sans-serif", fontSize: 9, fontWeight: 700,
+            letterSpacing: "1px", color: "#E4BEB3", textTransform: "uppercase",
+          }}>EXIT 退出</button>
         </div>
       ) : (
         <button onClick={onLoginClick} style={{
@@ -314,7 +320,7 @@ const App = () => {
 
   return (
     <div data-screen-label="Main App" style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <TopBar balance={balance} onTopUp={() => setTopUpOpen(true)} onNav={handleNav} screen={screen} phone={phone} loggedIn={loggedIn} onLoginClick={() => setLoginOpen(true)} />
+      <TopBar balance={balance} onTopUp={() => setTopUpOpen(true)} onNav={handleNav} screen={screen} phone={phone} loggedIn={loggedIn} onLoginClick={() => setLoginOpen(true)} onLogout={handleLogout} />
       <div style={{ display: "flex", flex: 1 }}>
         <Nav screen={screen} onNav={handleNav} />
         <main style={{ flex: 1, padding: "24px 32px 64px", overflow: "auto" }}>
