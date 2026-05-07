@@ -302,6 +302,11 @@ const App = () => {
     );
   }
 
+  // Require login
+  if (!loggedIn) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
+
   let main;
   if (screen === "home") main = <HomeScreen onOpen={handleOpenAgent} subscriptions={tweakShowSubs ? subs : []} />;
   else if (screen === "detail" && agentId) main = <AgentDetailScreen agentId={agentId} onRun={(input, to) => requireAuth('run', { input, to })} onSubscribe={handleSubscribe} subscriptions={subs} balance={balance} onTopUp={() => setTopUpOpen(true)} />;
