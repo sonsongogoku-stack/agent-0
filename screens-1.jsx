@@ -245,7 +245,7 @@ const HomeScreen = ({ onOpen, subscriptions }) => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-      {/* Hero */}
+      {false && (
       <div style={{ position: "relative", display: "grid", gridTemplateColumns: "1fr 360px", gap: 0, border: "1px solid #292A2F", background: "#1B1B20" }}>
         <div style={{ padding: "40px 48px", position: "relative", overflow: "hidden",
           background: featured.cover,
@@ -314,6 +314,7 @@ const HomeScreen = ({ onOpen, subscriptions }) => {
           ))}
         </div>
       </div>
+      )}
 
       {/* Section: Browse */}
       <div>
