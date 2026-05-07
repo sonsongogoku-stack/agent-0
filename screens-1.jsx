@@ -237,6 +237,7 @@ const HomeScreen = ({ onOpen, subscriptions }) => {
       </div>
     );
   }
+          {false && (
 
   const featured = agents[0];
   if (!featured || agents.length === 0) {
@@ -327,11 +328,11 @@ const HomeScreen = ({ onOpen, subscriptions }) => {
             </h3>
           </div>
           <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#E4BEB3" }}>
-            {agents.length} agents · sorted by usage
-          </span>
+          <span style={{display:"none"}}></span>
         </div>
 
-        <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #292A2F", marginBottom: 20 }}>
+        {false && (
+          <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #292A2F", marginBottom: 20 }}>
           {categories.map(c => (
             <button key={c} onClick={() => setActiveCat(c)} style={{
               background: "none", border: "none", padding: "10px 18px", cursor: "pointer",
@@ -343,9 +344,10 @@ const HomeScreen = ({ onOpen, subscriptions }) => {
             }}>{c}</button>
           ))}
         </div>
+          )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
-          {agents.map(a => (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
+          {agents.filter(a => a.id === "ai-canvas").map(a => (
             <AgentCard key={a.id} agent={a} onOpen={onOpen} subscribed={subbedIds.includes(a.id)} featured={a.id === "jobs-qa"} />
           ))}
         </div>
