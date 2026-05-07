@@ -237,7 +237,6 @@ const HomeScreen = ({ onOpen, subscriptions }) => {
       </div>
     );
   }
-          {false && (
 
   const featured = agents[0];
   if (!featured || agents.length === 0) {
