@@ -15,7 +15,7 @@ function parseAgent(row) {
 // GET /api/agents
 router.get('/', (req, res) => {
   const db = getDb();
-  const rows = db.prepare('SELECT * FROM agents ORDER BY runs DESC').all();
+  const rows = db.prepare('SELECT * FROM agents ORDER BY CASE WHEN id = 'ai-canvas' THEN 0 ELSE 1 END, runs DESC').all();
   res.json(rows.map(parseAgent));
 });
 
